@@ -9,6 +9,8 @@ to build** ("a database", "send email", "add logins") instead of tech jargon,
 then **compare 2–4 free tiers head-to-head** in a clean side-by-side table before
 you commit.
 
+> 🔧 **How it works:** see [HOW_IT_WORKS.md](./HOW_IT_WORKS.md) for the architecture, data pipeline, and internals.
+
 🌐 **Live: [freestack-livid.vercel.app](https://freestack-livid.vercel.app)** · ⭐ [Star on GitHub](https://github.com/n8watkins/freestack)
 · ☕ [Support on Ko-fi](https://ko-fi.com/n8watkins)
 
