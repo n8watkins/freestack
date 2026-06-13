@@ -4,6 +4,12 @@ import type { NextConfig } from "next";
 // these cover clickjacking, MIME sniffing, referrer leakage, and a baseline CSP.
 // The CSP is permissive on images (we embed remote service logos/favicons) but
 // locks scripts to same-origin.
+//
+// Next.js dev (Fast Refresh / HMR) is implemented with eval, which a strict
+// script-src blocks — leaving the framer-motion hero blank under `next dev`.
+// Allow 'unsafe-eval' in development only; production keeps the locked policy.
+const isDev = process.env.NODE_ENV !== "production";
+
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -16,7 +22,7 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "font-src 'self' data:",
