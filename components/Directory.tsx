@@ -4,6 +4,8 @@ import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ServicesData } from "@/lib/types";
 import { TOGGLE_FACETS } from "@/lib/format";
+import { GOAL_BY_ID, servicesForGoal } from "@/lib/goals";
+import { GoalGrid } from "./GoalGrid";
 import { ServiceCard } from "./ServiceCard";
 import { useCompare } from "./CompareContext";
 
@@ -11,18 +13,27 @@ const PAGE = 60;
 
 export function Directory({ data }: { data: ServicesData }) {
   const [query, setQuery] = useState("");
+  const [goal, setGoal] = useState<string | null>(null);
   const [category, setCategory] = useState<string | null>(null);
   const [toggles, setToggles] = useState<Set<string>>(new Set());
   const [limit, setLimit] = useState(PAGE);
   const searchRef = useRef<HTMLInputElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const deferredQuery = useDeferredValue(query);
   const { selected } = useCompare();
 
+  // A goal narrows the universe first; search + facets refine within it.
+  const activeGoal = goal ? GOAL_BY_ID[goal] : null;
+  const base = useMemo(
+    () => (activeGoal ? servicesForGoal(data.services, activeGoal) : data.services),
+    [data.services, activeGoal],
+  );
+
   const filtered = useMemo(() => {
     const q = deferredQuery.trim().toLowerCase();
     const activeToggles = TOGGLE_FACETS.filter((t) => toggles.has(t.key));
-    return data.services.filter((s) => {
+    return base.filter((s) => {
       if (category && s.category !== category) return false;
       for (const t of activeToggles) if (!t.test(s)) return false;
       if (!q) return true;
@@ -33,7 +44,7 @@ export function Directory({ data }: { data: ServicesData }) {
         s.description.toLowerCase().includes(q)
       );
     });
-  }, [data.services, deferredQuery, category, toggles]);
+  }, [base, deferredQuery, category, toggles]);
 
   // Reset pagination whenever filters change.
   const visible = filtered.slice(0, limit);
@@ -48,10 +59,22 @@ export function Directory({ data }: { data: ServicesData }) {
     resetLimit();
   }
 
-  const hasFilters = !!query || !!category || toggles.size > 0;
+  function selectGoal(id: string) {
+    setGoal((g) => (g === id ? null : id));
+    setCategory(null);
+    resetLimit();
+    requestAnimationFrame(() =>
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  }
+
+  const hasFilters = !!query || !!goal || !!category || toggles.size > 0;
 
   return (
     <div id="browse" className="scroll-mt-20">
+      <GoalGrid services={data.services} current={goal} onSelect={selectGoal} />
+
+      <div ref={resultsRef} className="scroll-mt-20">
       {/* Search bar */}
       <div className="sticky top-[57px] z-20 -mx-4 mb-5 bg-bg/90 px-4 py-3 backdrop-blur-md sm:-mx-6 sm:px-6">
         <div className="mx-auto max-w-3xl">
@@ -119,30 +142,55 @@ export function Directory({ data }: { data: ServicesData }) {
         </div>
       </div>
 
-      {/* Category rail */}
-      <div className="thin-scroll mb-6 flex gap-2 overflow-x-auto pb-2">
-        <CatChip
-          label="All"
-          count={data.count}
-          active={category === null}
-          onClick={() => {
-            setCategory(null);
-            resetLimit();
-          }}
-        />
-        {data.categories.map((c) => (
+      {/* Goal banner (when a goal is active) replaces the global category rail */}
+      {activeGoal ? (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-accent/50 bg-mint px-4 py-3"
+        >
+          <span className="text-lg" aria-hidden>
+            {activeGoal.icon}
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-ink">{activeGoal.label}</p>
+            <p className="text-xs text-mute">
+              Free tiers across {activeGoal.categories.join(" · ")}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => selectGoal(activeGoal.id)}
+            className="ring-focus ml-auto inline-flex items-center gap-1.5 rounded-lg border border-edge-strong bg-paper px-3 py-1.5 text-xs font-semibold text-mute shadow-sm transition hover:border-accent hover:text-accent-ink"
+          >
+            Clear goal
+          </button>
+        </motion.div>
+      ) : (
+        <div className="thin-scroll mb-6 flex gap-2 overflow-x-auto pb-2">
           <CatChip
-            key={c.id}
-            label={c.name}
-            count={c.count}
-            active={category === c.name}
+            label="All"
+            count={data.count}
+            active={category === null}
             onClick={() => {
-              setCategory(category === c.name ? null : c.name);
+              setCategory(null);
               resetLimit();
             }}
           />
-        ))}
-      </div>
+          {data.categories.map((c) => (
+            <CatChip
+              key={c.id}
+              label={c.name}
+              count={c.count}
+              active={category === c.name}
+              onClick={() => {
+                setCategory(category === c.name ? null : c.name);
+                resetLimit();
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Result count + clear */}
       <div className="mb-4 flex items-center justify-between text-sm">
@@ -163,6 +211,7 @@ export function Directory({ data }: { data: ServicesData }) {
             type="button"
             onClick={() => {
               setQuery("");
+              setGoal(null);
               setCategory(null);
               setToggles(new Set());
               resetLimit();
@@ -209,6 +258,7 @@ export function Directory({ data }: { data: ServicesData }) {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }

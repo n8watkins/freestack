@@ -4,14 +4,15 @@
 
 FreeStack is a fast, free, open-source frontend for the famous
 [ripienaar/free-for-dev](https://github.com/ripienaar/free-for-dev) list — 1,200+
-services that offer a genuine free tier for developers. Search them instantly,
-filter by category and free-tier facets, then **compare 2–4 free tiers
-head-to-head** in a clean side-by-side table before you commit.
+services that offer a genuine free tier for developers. Browse by **what you need
+to build** ("a database", "send email", "add logins") instead of tech jargon,
+then **compare 2–4 free tiers head-to-head** in a clean side-by-side table before
+you commit.
 
-🌐 **Live:** _coming soon_ · ⭐ [Star on GitHub](https://github.com/n8watkins/freestack)
+🌐 **Live: [freestack-livid.vercel.app](https://freestack-livid.vercel.app)** · ⭐ [Star on GitHub](https://github.com/n8watkins/freestack)
 · ☕ [Support on Ko-fi](https://ko-fi.com/n8watkins)
 
-![FreeStack — search every free developer tier](assets/hero.png)
+![FreeStack — start with what you need to build](assets/hero.png)
 
 ## Why
 
@@ -23,6 +24,11 @@ free storage.
 
 FreeStack fixes that:
 
+- **🎯 Goal-first browsing** — start from the job, not the jargon. 24 goals
+  ("Host a website", "Spin up a database", "Send transactional email", "Add login
+  & auth") each map to every free tier that does it, so you don't need to know
+  whether the thing you want is filed under "BaaS", "PaaS", or "Managed Data
+  Services."
 - **Instant search** — type a service, category, or a limit ("10GB", "no credit
   card") and the directory filters as you type. Fully keyboard-accessible.
 - **Category + facet filters** — 56 categories plus structured toggles (open
@@ -34,6 +40,8 @@ FreeStack fixes that:
   row highlighted** so the winner is obvious at a glance.
 - **Freshness signal** — every build stamps the date the data was last verified
   against the upstream list.
+
+![Browse by what you need to build, not the tech category](assets/goals.png)
 
 ![Compare free tiers side-by-side](assets/compare.png)
 
