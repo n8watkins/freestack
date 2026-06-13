@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import type { Service } from "@/lib/types";
 import { facetChips } from "@/lib/format";
 import { Logo } from "./Logo";
@@ -13,14 +12,9 @@ export function ServiceCard({ service }: { service: Service }) {
   const disabled = isFull && !selected;
 
   return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
-      className={`group relative flex flex-col rounded-xl border bg-card p-4 transition-shadow hover:shadow-[0_4px_20px_-6px_rgba(5,150,105,0.18)] ${
-        selected ? "border-accent ring-1 ring-accent" : "border-edge"
+    <article
+      className={`fade-up group relative flex flex-col rounded-xl border bg-card p-4 transition-all duration-200 ease-out will-change-transform hover:-translate-y-1 hover:shadow-[0_12px_28px_-10px_rgba(5,150,105,0.25)] ${
+        selected ? "border-accent ring-1 ring-accent" : "border-edge hover:border-accent/60"
       }`}
     >
       <div className="flex items-start gap-3">
@@ -108,6 +102,6 @@ export function ServiceCard({ service }: { service: Service }) {
           )}
         </button>
       </div>
-    </motion.article>
+    </article>
   );
 }

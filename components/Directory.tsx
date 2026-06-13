@@ -1,7 +1,7 @@
 "use client";
 
 import { useDeferredValue, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { ServicesData } from "@/lib/types";
 import { TOGGLE_FACETS } from "@/lib/format";
 import { GOAL_BY_ID, servicesForGoal } from "@/lib/goals";
@@ -228,19 +228,16 @@ export function Directory({ data }: { data: ServicesData }) {
         <EmptyState query={query} />
       ) : (
         <>
-          <motion.div
-            layout
+          <div
             className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             style={{
               paddingBottom: selected.length > 0 ? "88px" : undefined,
             }}
           >
-            <AnimatePresence mode="popLayout">
-              {visible.map((s) => (
-                <ServiceCard key={s.id} service={s} />
-              ))}
-            </AnimatePresence>
-          </motion.div>
+            {visible.map((s) => (
+              <ServiceCard key={s.id} service={s} />
+            ))}
+          </div>
 
           {visible.length < filtered.length && (
             <div className="mt-8 flex justify-center pb-24">
