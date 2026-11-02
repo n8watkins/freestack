@@ -1,5 +1,7 @@
 # FreeStack
 
+> **Archived (2026-11-01).** This project is no longer maintained and its live site has been taken down. The code stays here, read-only, for reference.
+
 **Every free developer tier, searchable — and side-by-side.**
 
 FreeStack is a fast, free, open-source frontend for the famous
